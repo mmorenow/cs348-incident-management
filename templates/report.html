@@ -1,0 +1,179 @@
+<!-- report.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+        }
+        .nav {
+            background-color: #34495e;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .nav a:hover {
+            background-color: #2c3e50;
+            border-radius: 3px;
+        }
+        .nav a.active {
+            background-color: #2980b9;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #2980b9;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('incidents') }}">Manage Incidents</a>
+        <a href="{{ url_for('report') }}" class="active">Reports</a>
+    </div>
+
+    <h1>Incident Report</h1>
+
+    <!-- Filter Form -->
+    <form method="GET" action="{{ url_for('report') }}">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ current_start_date }}"><br><br>
+
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ current_end_date }}"><br><br>
+
+        <label for="severity">Severity:</label>
+        <select id="severity" name="severity">
+            <option value="">All</option>
+            {% for sev in severities %}
+                <option value="{{ sev['severity'] }}" {% if sev['severity'] == current_severity %}selected{% endif %}>{{ sev['severity'] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="status">Status:</label>
+        <select id="status" name="status">
+            <option value="">All</option>
+            {% for stat in statuses %}
+                <option value="{{ stat['status'] }}" {% if stat['status'] == current_status %}selected{% endif %}>{{ stat['status'] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="type">Type:</label>
+        <select id="type" name="type">
+            <option value="">All</option>
+            {% for t in types %}
+                <option value="{{ t['type'] }}" {% if t['type'] == current_type %}selected{% endif %}>{{ t['type'] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="user_id">Assigned User:</label>
+        <select id="user_id" name="user_id">
+            <option value="">All</option>
+            {% for user in users %}
+                <option value="{{ user['id'] }}" {% if user['id']|string == current_user_id %}selected{% endif %}>
+                    {{ user['name'] }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Report Statistics -->
+    <h3>Total Incidents: {{ total_incidents }}</h3>
+
+    <h4>By Severity:</h4>
+    <ul>
+        {% for severity, count in severity_counts.items() %}
+            <li>{{ severity }}: {{ count }}</li>
+        {% endfor %}
+        {% if severity_counts|length == 0 %}
+            <li>No incidents found</li>
+        {% endif %}
+    </ul>
+
+    <h4>By Status:</h4>
+    <ul>
+        {% for status, count in status_counts.items() %}
+            <li>{{ status }}: {{ count }}</li>
+        {% endfor %}
+        {% if status_counts|length == 0 %}
+            <li>No incidents found</li>
+        {% endif %}
+    </ul>
+
+    <!-- Incident List -->
+    <h2>Incident List</h2>
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Description</th>
+        </tr>
+        {% for incident in incidents %}
+            <tr>
+                <td>{{ incident.type }}</td>
+                <td>{{ incident.severity }}</td>
+                <td>{{ incident.status }}</td>
+                <td>{{ incident.date }}</td>
+                <td>{{ incident.description }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

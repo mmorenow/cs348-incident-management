@@ -1,0 +1,9 @@
+runtime: python311
+entrypoint: gunicorn -b :$PORT app:app
+
+env_variables:
+  DATABASE_URL: "postgresql://postgres:%2FAlonso2004@/incidents_db?host=/cloudsql/cs348-marcelomoreno-socapp:us-central1:cs348-incidents-db"
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 3

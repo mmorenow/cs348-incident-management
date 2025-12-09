@@ -1,0 +1,152 @@
+<!-- incidents.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Incidents</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+        }
+        .nav {
+            background-color: #34495e;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .nav a:hover {
+            background-color: #2c3e50;
+            border-radius: 3px;
+        }
+        .nav a.active {
+            background-color: #2980b9;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #2980b9;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('incidents') }}" class="active">Manage Incidents</a>
+        <a href="{{ url_for('report') }}">Reports</a>
+    </div>
+
+    <h1>Incident Management</h1>
+
+    <!-- Create New Incident Form -->
+    <h2>Create New Incident</h2>
+    <form method="POST" action="{{ url_for('create_incident') }}">
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type" required><br><br>
+
+        <label for="severity">Severity:</label>
+        <input type="text" id="severity" name="severity" list="severity-list" required>
+        <datalist id="severity-list">
+            {% for sev in severities %}
+                <option value="{{ sev['severity'] }}">
+            {% endfor %}
+        </datalist><br><br>
+
+        <label for="status">Status:</label>
+        <input type="text" id="status" name="status" required><br><br>
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br><br>
+
+        <label for="user_id">Assign to User:</label>
+        <select id="user_id" name="user_id">
+            <option value="">-- None --</option>
+            {% for user in users %}
+                <option value="{{ user['id'] }}">{{ user['name'] }} ({{ user['role'] }})</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Create Incident</button>
+    </form>
+
+    <!-- List of Incidents -->
+    <h2>Current Incidents</h2>
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Assigned To</th>
+            <th>Actions</th>
+        </tr>
+        {% for incident in incidents %}
+            <tr>
+                <td>{{ incident.type }}</td>
+                <td>{{ incident.severity }}</td>
+                <td>{{ incident.status }}</td>
+                <td>{{ incident.date }}</td>
+                <td>{{ incident.description }}</td>
+                <td>{{ incident.user_name or 'Unassigned' }}</td>
+                <td>
+                    <a href="{{ url_for('update_incident', id=incident.id) }}">Edit</a> |
+                    <a href="{{ url_for('delete_incident', id=incident.id) }}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

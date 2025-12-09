@@ -1,0 +1,10 @@
+.gcloudignore
+.git/
+.gitignore
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+test_db_connection.py
